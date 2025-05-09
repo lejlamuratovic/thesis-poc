@@ -1,0 +1,7 @@
+kafka-python
+scikit-fuzzy
+numpy
+scipy
+packaging
+networkx
+pandas
