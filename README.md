@@ -92,7 +92,7 @@ Each will listen on `auth_events` and, on **Ctrl+C**, print combined accuracy (T
 ### 4. Generate Test Events
 
 ```bash
-python multi_burst_producer.py
+python burst_test_producer.py
 ```
 
 This script sends controlled bursts of failed-login events to `auth_events`.
