@@ -1,53 +1,81 @@
+# Event-Driven Anomaly Detection PoC
 
-# Proof of Concept: Rule-Based vs AI-Based Anomaly Detection
+This proof-of-concept (PoC) project compares **rule-based** and **AI-based (fuzzy logic)** anomaly detection methods applied to an event-driven user authentication system. Synthetic failed login bursts are generated and processed through Kafka topics to evaluate detection accuracy, latency, and throughput.
 
-This PoC demonstrates the comparison between Rule-Based and AI-Based (Fuzzy Logic) anomaly detection in an event-driven user authentication pipeline using Kafka.
+---
+
+## Prerequisites
+
+- Docker and Docker Compose installed  
+- Python 3.8+ installed  
+- Python virtual environment (recommended)  
+- Required Python packages installed (see below)  
+
+---
 
 ## Setup Instructions
 
-### 1. Docker Setup
+### 1. Start Kafka and ZooKeeper
 
-To start the Kafka and Zookeeper services, use the following command:
+From the project root directory where `docker-compose.yml` is located, run:
 
 ```bash
-docker-compose up
+docker-compose up -d
 ```
 
-This will start the required services for Kafka communication. Make sure that Docker is installed and running on your machine.
+This will start Kafka and ZooKeeper containers required for the messaging system.
 
-### 2. Python Environment Setup
-
-Create a Python virtual environment:
+Confirm containers are running:
 
 ```bash
-python3 -m venv venv
+docker ps
 ```
 
-Activate the virtual environment:
-
-- For Linux/macOS: `source venv/bin/activate`
-- For Windows: `venv\Scriptsctivate`
-
-Install the required dependencies:
+### 2. Setup Python Environment
+Create and activate a Python virtual environment and install requirements:
 
 ```bash
+python -m venv venv
+source venv/bin/activate    # On Linux/macOS
+venv\Scripts\activate       # On Windows PowerShell
 pip install -r requirements.txt
 ```
 
-### 3. Running the Pipeline
+### 3. Run Synthetic Event Producer
+Generate synthetic bursts of failed login events:
 
-You can start the Kafka consumers and producers using the Python scripts provided.
+```bash
+python producer.py --failures-per-burst 6 --fail-interval 0.1 --burst-pause 1.0
+```
 
-1. **Start the Kafka Producer (Synthetic Data Generation)**:
-   Run the script to simulate authentication events and push them to Kafka.
+--failures-per-burst: Number of failed logins per burst (default 6)
 
-2. **Start the Rule-Based Consumer**:
-   This will listen for events from Kafka and process them based on fixed rules for anomaly detection.
+--fail-interval: Seconds between failures within a burst (default 0.1)
 
-3. **Start the AI-Based (Fuzzy Logic) Consumer**:
-   This will listen for events and apply fuzzy logic inference for anomaly scoring.
+--burst-pause: Seconds pause between bursts (default 1.0)
 
-### 4. Experiment and Metrics Collection
+### 4. Run Detection Consumers
+Start the rule-based detector consumer:
 
-Once the pipeline is running, you can trigger synthetic events and evaluate the performance of both detection systems (latency, throughput, accuracy).
+```bash
+python rule_consumer.py
+```
+
+Start the fuzzy logic detector consumer:
+
+```bash
+python fuzzy_consumer.py
+```
+
+Both listen to auth_events topic and emit anomaly alerts to their respective Kafka topics.
+
+
+### 5. Run Metrics Consumer
+To monitor, aggregate, and export detection metrics, run:
+
+```bash
+python metrics_consumer.py
+```
+
+Press Ctrl+C to gracefully stop the metrics consumer and print a summary of detection accuracy, latency, and throughput. Metrics are also exported to metrics_summary.csv.
 
