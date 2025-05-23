@@ -1,7 +1,7 @@
 kafka-python
 scikit-fuzzy
-numpy
+pandas
 scipy
 packaging
+numpy
 networkx
-pandas

@@ -1,0 +1,13 @@
+{
+  "fail_count": {
+    "low": [0, 0, 8],
+    "medium": [5, 12, 18],
+    "high": [15, 20, 20]
+  },
+  "anomaly_score": {
+    "low": [0, 0, 40],
+    "medium": [30, 60, 85],
+    "high": [70, 100, 100]
+  },
+  "threshold_score": 55
+}
